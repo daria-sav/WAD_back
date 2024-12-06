@@ -35,6 +35,3 @@ const createTables = async () => {
   };
   
   module.exports = { pool, createTables };
-  
-
-module.exports = pool;
