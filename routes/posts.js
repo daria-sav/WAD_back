@@ -20,7 +20,7 @@ const authenticate = (req, res, next) => {
 // Fetch all posts
 router.get('/', authenticate, async (req, res) => {
     try {
-        const result = await pool.query('SELECT * FROM posts ORDER BY id ASC');
+        const result = await pool.query('SELECT * FROM posts ORDER BY id DESC');
         res.status(200).json(result.rows);
     } catch (err) {
         res.status(500).send('Error fetching posts.');
@@ -30,12 +30,16 @@ router.get('/', authenticate, async (req, res) => {
 // Add a new post
 router.post('/add', authenticate, async (req, res) => {
     const { body } = req.body;
+    const userId = req.user.id; 
+    if (!body) {
+        return res.status(400).send('Post body is required.');
+    }
     try {
-        await pool.query(
-            `INSERT INTO posts (body, user_id) VALUES ($1, $2)`,
-            [body, req.user.id]
+        const result = await pool.query(
+            'INSERT INTO posts (body, user_id) VALUES ($1, $2) RETURNING *',
+            [body, userId]
         );
-        res.status(201).send('Post added successfully.');
+        res.status(201).json(result.rows[0]);
     } catch (err) {
         res.status(500).send('Error adding post.');
     }
