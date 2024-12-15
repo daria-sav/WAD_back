@@ -1,1 +1,20 @@
-12345
+1. DONE Each listed post should be clickable and when clicked, it should redirect you to “a post” 
+page (details about the content of this page will follow).
+2. DONE includes a “logout” button that, when clicked, will logout the user and redirect her to 
+the login page. 
+3. DONE includes an “add post” button that, when clicked, will redirect the user to the add post 
+“page” (details about the content of this page will follow). 
+4. includes a “delete all” button, that when clicked will delete all the posts from the 
+database.
+
+
+important:
+- DONE The add post “page” should allow only a logged-in user to add a post, and it should look close enough to Figure 3. 
+- DONE You are adding only the body of the post through the add post “page”, but a post has a 
+date too(Figure 2). 
+- DONE The a post “page” should fetch and present a specific post (the one clicked on in the 
+homepage) from the database, and it should contain two buttons: 
+a. DONE update, when pressed on, will update the post in the database; and 
+b. DONE deletes, when pressed on, will delete the post from the database.
+- DONE If a user is not logged in, she should not be allowed to reach/access “a post” or “add 
+post” “pages”.

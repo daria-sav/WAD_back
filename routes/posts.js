@@ -20,7 +20,7 @@ const authenticate = (req, res, next) => {
 // Fetch all posts
 router.get('/', authenticate, async (req, res) => {
     try {
-        const result = await pool.query('SELECT * FROM posts');
+        const result = await pool.query('SELECT * FROM posts ORDER BY id ASC');
         res.status(200).json(result.rows);
     } catch (err) {
         res.status(500).send('Error fetching posts.');
