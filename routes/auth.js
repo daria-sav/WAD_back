@@ -1,4 +1,4 @@
-/*const express = require('express');
+const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jwt-simple');
 const { pool } = require('../database');
@@ -6,36 +6,71 @@ const { pool } = require('../database');
 const router = express.Router();
 const SECRET = 'mysecretkey';
 
+// // Signup route
+// router.post('/signup', async (req, res) => {
+//     const { email, password } = req.body;
+//     const hashedPassword = await bcrypt.hash(password, 10);
+//     try {
+//         await pool.query(
+//             `INSERT INTO users (email, password) VALUES ($1, $2)`,
+//             [email, hashedPassword]
+//         );
+//         res.status(201).send('User registered successfully.');
+//     } catch (err) {
+//         console.error('Error registering user:', err);
+//         res.status(500).send('Error registering user.');
+//     }
+// });
+// router.post('/signup', async (req, res) => {
+//     const { email, password } = req.body;
+//     const hashedPassword = await bcrypt.hash(password, 10);
+//     try {
+//         const result = await pool.query(
+//             `INSERT INTO users (email, password) VALUES ($1, $2) RETURNING id, email`,
+//             [email, hashedPassword]
+//         );
+//         const user = result.rows[0];
+//         const token = jwt.encode({ id: user.id, email: user.email }, SECRET);
+//         res.status(201).json({ token });
+//     } catch (err) {
+//         if (err.code === '23505') {
+//             return res.status(409).send('Error registering user: Email already exists.');
+//         }
+//         res.status(500).send('Error registering user.');
+//     }
+// });
+
 // Signup route
 router.post('/signup', async (req, res) => {
     const { email, password } = req.body;
-    const hashedPassword = await bcrypt.hash(password, 10);
-    try {
-        await pool.query(
-            `INSERT INTO users (email, password) VALUES ($1, $2)`,
-            [email, hashedPassword]
-        );
-        res.status(201).send('User registered successfully.');
-    } catch (err) {
-        res.status(500).send('Error registering user.');
+
+    if (!email || !password) {
+        return res.status(400).send('Email and password are required.');
     }
-});
-router.post('/signup', async (req, res) => {
-    const { email, password } = req.body;
-    const hashedPassword = await bcrypt.hash(password, 10);
+
     try {
+        // Проверка на существование пользователя
+        const existingUser = await pool.query(`SELECT id FROM users WHERE email = $1`, [email]);
+        if (existingUser.rows.length > 0) {
+            return res.status(409).send('Email already exists.');
+        }
+
+        // Хэширование пароля
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Вставка нового пользователя
         const result = await pool.query(
             `INSERT INTO users (email, password) VALUES ($1, $2) RETURNING id, email`,
             [email, hashedPassword]
         );
+
         const user = result.rows[0];
         const token = jwt.encode({ id: user.id, email: user.email }, SECRET);
         res.status(201).json({ token });
+
     } catch (err) {
-        if (err.code === '23505') {
-            return res.status(409).send('Error registering user: Email already exists.');
-        }
-        res.status(500).send('Error registering user.');
+        console.error('Error registering user:', err);
+        res.status(500).send('Internal server error.');
     }
 });
 
@@ -55,29 +90,29 @@ router.post('/login', async (req, res) => {
     }
 });
 
-// Check for user existence (for LoginPage.vue)
-router.post('/signup', async (req, res) => {
-    const { email, password } = req.body;
-    const hashedPassword = await bcrypt.hash(password, 10);
-    try {
-        const result = await pool.query( // Выполняем запрос и сохраняем результат
-            `INSERT INTO users (email, password) VALUES ($1, $2) RETURNING id, email`, // Добавляем RETURNING 
-            [email, hashedPassword]
-        );
-        const user = result.rows[0]; // Получаем данные нового пользователя
-        const token = jwt.encode({ id: user.id, email: user.email }, SECRET); // Генерируем токен
-        res.status(201).json({ token }); // Отправляем токен в ответе
-    } catch (err) {
-        if (err.code === '23505') { // Проверяем, если ошибка связана с уникальностью email
-            return res.status(409).send('Error registering user: Email already exists.'); // Отправляем более информативную ошибку
-        }
-        res.status(500).send('Error registering user.');
-    }
-});
+// // Check for user existence (for LoginPage.vue)
+// router.post('/signup', async (req, res) => {
+//     const { email, password } = req.body;
+//     const hashedPassword = await bcrypt.hash(password, 10);
+//     try {
+//         const result = await pool.query( // Выполняем запрос и сохраняем результат
+//             `INSERT INTO users (email, password) VALUES ($1, $2) RETURNING id, email`, // Добавляем RETURNING 
+//             [email, hashedPassword]
+//         );
+//         const user = result.rows[0]; // Получаем данные нового пользователя
+//         const token = jwt.encode({ id: user.id, email: user.email }, SECRET); // Генерируем токен
+//         res.status(201).json({ token }); // Отправляем токен в ответе
+//     } catch (err) {
+//         if (err.code === '23505') { // Проверяем, если ошибка связана с уникальностью email
+//             return res.status(409).send('Error registering user: Email already exists.'); // Отправляем более информативную ошибку
+//         }
+//         res.status(500).send('Error registering user.');
+//     }
+// });
 
-module.exports = router;*/
+module.exports = router;
 
-
+/*
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jwt-simple');
@@ -137,4 +172,4 @@ router.get('/check-user/:email', async (req, res) => {
     }
 });
 
-module.exports = router;
+module.exports = router;*/
