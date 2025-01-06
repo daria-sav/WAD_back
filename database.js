@@ -2,7 +2,7 @@ const Pool = require('pg').Pool;
 
 const pool = new Pool({
     user: "postgres",
-    password: "chlen",  ///elisabeth changed
+    password: "12345",  ///elisabeth changed
     database: "WADdb",
     host: "localhost",
     port: "5433"   ///elisabeth changed
